@@ -21,6 +21,7 @@ public class AppUpload {
                         RequestBody.create(MediaType.parse("application/octet-stream"),
                                 new File("apps/lambdatest.ipa")))
                 .addFormDataPart("custom_id","iOS_appurl")
+                .addFormDataPart("name","iOS_appurl")
                 .build();
         Request request = new Request.Builder()
                 .url("https://manual-api.lambdatest.com/app/upload/realDevice")

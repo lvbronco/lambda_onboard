@@ -25,7 +25,7 @@ public class iOS2 extends AppUpload {
                 capabilities.setCapability("build", "iOSAppAutomation_LT");
                 capabilities.setCapability("name", "iOS_Test");
                 capabilities.setCapability("platformName", "iOS");
-                capabilities.setCapability("deviceName", "iPhone 11");
+                capabilities.setCapability("deviceName", "iPhone.*");
                 capabilities.setCapability("isRealMobile", true);
                 capabilities.setCapability("platformVersion", "13.0");
                 capabilities.setCapability("console", true);
@@ -33,7 +33,7 @@ public class iOS2 extends AppUpload {
                 capabilities.setCapability("app", "iOS_appurl");
 
                 IOSDriver<IOSElement> driver = new IOSDriver<IOSElement>(
-                                new URL("https://" + username + ":" + accessKey + "@beta-hub.lambdatest.com/wd/hub"),
+                                new URL("https://" + username + ":" + accessKey + "@mobile-hub.lambdatest.com/wd/hub"),
                                 capabilities);
 
                 IOSElement Checkbox = (IOSElement) new WebDriverWait(driver, 30).until(

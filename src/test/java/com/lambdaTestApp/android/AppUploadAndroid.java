@@ -21,6 +21,7 @@ public class AppUploadAndroid {
                         RequestBody.create(MediaType.parse("application/octet-stream"),
                                 new File("apps/WikipediaSample.apk")))
                 .addFormDataPart("custom_id","android_appurl")
+                .addFormDataPart("name","android_appurl")
                 .build();
         Request request = new Request.Builder()
                 .url("https://manual-api.lambdatest.com/app/upload/realDevice")
