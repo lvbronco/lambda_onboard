@@ -23,11 +23,13 @@ public class TestNGTodoMobile {
         String username = System.getenv("LT_USERNAME") == null ? "Your LT Username" : System.getenv("LT_USERNAME");
         String authkey = System.getenv("LT_ACCESS_KEY") == null ? "Your LT AccessKey" : System.getenv("LT_ACCESS_KEY");
         ;
-        String hub = "@hub.lambdatest.com/wd/hub";
+        String hub = "@mobile-hub.lambdatest.com/wd/hub";
 
         DesiredCapabilities caps = new DesiredCapabilities();
-        caps.setCapability("deviceName", "Google Pixel 4a");
+        caps.setCapability("deviceName", "Pixel.*");
+        caps.setCapability("platformName", "Android");
         caps.setCapability("build", "TestNG With Java");
+        caps.setCapability("platformVersion","11");
         caps.setCapability("name", m.getName() + this.getClass().getName());
         caps.setCapability("plugin", "git-testng");
         caps.setCapability("isRealMobile", true);
@@ -35,7 +37,7 @@ public class TestNGTodoMobile {
         String[] Tags = new String[] { "Feature", "Tag", "Moderate" };
         caps.setCapability("tags", Tags);
 
-        driver = new RemoteWebDriver(new URL("https://" + username + ":" + authkey + hub), caps);
+        driver = new RemoteWebDriver(new URL("http://" + username + ":" + authkey + hub), caps);
     }
 
     @Test
@@ -72,27 +74,8 @@ public class TestNGTodoMobile {
         System.out.println("Checking Another Box");
         driver.findElement(By.name("li3")).click();
 
-        System.out.println("Checking Another Box");
-        driver.findElement(By.name("li7")).click();
-
-        System.out.println("Checking Another Box");
-        driver.findElement(By.name("li8")).click();
-
-        System.out.println("Entering Text");
-        driver.findElement(By.id("sampletodotext")).sendKeys("Get Taste of Lambda and Stick to It");
-
-        driver.findElement(By.id("addbutton")).click();
-
-        System.out.println("Checking Another Box");
-        driver.findElement(By.name("li9")).click();
-
-        // Let's also assert that the todo we added is present in the list.
-
-        spanText = driver.findElementByXPath("/html/body/div/div/div/ul/li[9]/span").getText();
-        Assert.assertEquals("Get Taste of Lambda and Stick to It", spanText);
         Status = "passed";
         Thread.sleep(800);
-
         System.out.println("TestFinished");
 
     }
