@@ -31,6 +31,7 @@ public class Android2 extends AppUploadAndroid {
                 caps.setCapability("build", "Android");
                 caps.setCapability("name", "Single Test");
                 caps.setCapability("app", "android_appurl");
+                caps.setCapability("appProfiling", true);
 
                 AndroidDriver<AndroidElement> driver = new AndroidDriver<AndroidElement>(
                                 new URL("https://" + userName + ":" + accessKey + "@mobile-hub.lambdatest.com/wd/hub"),
