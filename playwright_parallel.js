@@ -12,7 +12,7 @@ const parallelTests = async (capability) => {
 
   await page.goto('https://www.bing.com')
 
-  const element = await page.$('[aria-label="Enter your search term"]')
+  const element = await page.$('[id="sb_form_q"]')
   await element.click()
   await element.type('LambdaTest')
   await element.press('Enter')
@@ -47,7 +47,7 @@ const capabilities = [
   },
   {
     'browserName': 'MicrosoftEdge',
-    'browserVersion': 'latest',
+    'browserVersion': '109',
     'LT:Options': {
       'platform': 'Windows 8',
       'build': 'Playwright Sample Build',
