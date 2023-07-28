@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite thread-count="5" parallel="tests" name="Suite">
-  <test thread-count="5" parallel="classes" name="Test">
+<suite thread-count="100" name="Mobile" parallel="tests">
+
+  <test name="iOSApp 1">
+    <parameter name="version" value="16" />
+    <parameter name="platform" value="iOS" />
+    <parameter name="device" value="iPhone 14" />
     <classes>
-      <class name="com.lambdaTestApp.iOS.iOS1"/>
-      <class name="com.lambdaTestApp.iOS.iOS2"/>
+      <class name="com.lambdaTestApp.iOS.IOSApp" />
     </classes>
-  </test> <!-- Test -->
-</suite> <!-- Suite -->
+  </test>
+
+  <test name="iOSApp 2">
+    <parameter name="version" value="15" />
+    <parameter name="platform" value="iOS" />
+    <parameter name="device" value="iPhone 13" />
+    <classes>
+      <class name="com.lambdaTestApp.iOS.IOSApp" />
+    </classes>
+  </test>
+</suite>
