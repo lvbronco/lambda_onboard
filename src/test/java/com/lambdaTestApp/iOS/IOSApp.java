@@ -139,7 +139,8 @@ public class IOSApp {
                 .addHeader("Authorization", credential)
                 .build();
         Response response = client.newCall(request).execute();
-        Thread.sleep(5000);
+        Thread.sleep(15000);
+
     }
 
     private boolean isAppPresent() throws IOException {
