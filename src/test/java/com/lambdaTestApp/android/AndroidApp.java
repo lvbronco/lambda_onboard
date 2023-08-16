@@ -33,8 +33,12 @@ public class AndroidApp {
         if (isAppPresent()){
             System.out.println("App already present, skipping app upload...");
         }else {
-            System.out.println("Uploading app...");
+            System.out.println("App not present, uploading app...");
             uploadApp();
+            System.out.println("App uploading successful");
+            System.out.println("Waiting for tests to be initiated");
+            Thread.sleep(60000);
+            System.out.println("Starting the test execution...");
         }
     }
 
@@ -143,8 +147,7 @@ public class AndroidApp {
                 .addHeader("Authorization", credential)
                 .build();
         Response response = client.newCall(request).execute();
-        Thread.sleep(15000);
-        System.out.println(response.body().string());
+        //System.out.println(response.body().string());
     }
 
     private boolean isAppPresent() throws IOException {
