@@ -4,6 +4,10 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileBy;
 import io.appium.java_client.MobileElement;
 import okhttp3.*;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -13,6 +17,8 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class IOSApp {
 
@@ -23,11 +29,18 @@ public class IOSApp {
 
     public String gridURL = "@mobile-hub.lambdatest.com/wd/hub";
 
+    private final String credential = Credentials.basic(userName, accessKey);
+
     AppiumDriver driver;
 
     @BeforeSuite
-    public void beforeSuite() throws IOException {
-        uploadApp();
+    public void beforeSuite() throws IOException, InterruptedException {
+        if (isAppPresent()){
+            System.out.println("App already present, skipping app upload...");
+        }else {
+            System.out.println("Uploading app...");
+            uploadApp();
+        }
     }
 
     @Test
@@ -42,7 +55,7 @@ public class IOSApp {
             capabilities.setCapability("platformVersion",version);
             capabilities.setCapability("platformName", platform);
             capabilities.setCapability("isRealMobile", true);
-            capabilities.setCapability("app", "iOS_appurl"); //Enter your app url
+            capabilities.setCapability("app", "proverbial-ios"); //Enter your app url
             capabilities.setCapability("deviceOrientation", "PORTRAIT");
             capabilities.setCapability("console", true);
             capabilities.setCapability("network", true);
@@ -109,9 +122,7 @@ public class IOSApp {
 
     }
 
-    private void uploadApp() throws IOException {
-        String credential = Credentials.basic(userName, accessKey);
-
+    private void uploadApp() throws IOException, InterruptedException {
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
         MediaType mediaType = MediaType.parse("text/plain");
@@ -119,8 +130,8 @@ public class IOSApp {
                 .addFormDataPart("appFile", "apps/proverbial_ios.ipa",
                         RequestBody.create(MediaType.parse("application/octet-stream"),
                                 new File("apps/proverbial_ios.ipa")))
-                .addFormDataPart("custom_id","iOS_appurl")
-                .addFormDataPart("name","iOS_appurl")
+                .addFormDataPart("custom_id","proverbial-ios")
+                .addFormDataPart("name","proverbial-ios")
                 .build();
         Request request = new Request.Builder()
                 .url("https://manual-api.lambdatest.com/app/upload/realDevice")
@@ -128,7 +139,49 @@ public class IOSApp {
                 .addHeader("Authorization", credential)
                 .build();
         Response response = client.newCall(request).execute();
+        Thread.sleep(5000);
     }
+
+    private boolean isAppPresent() throws IOException {
+        String jsonString = getResponseAsJson("ios");
+        List<String> listOfApps = getAppIdsFromJson(jsonString);
+        return listOfApps.contains("proverbial-ios");
+    }
+
+    private String getResponseAsJson(String platform) throws IOException {
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .build();
+        MediaType mediaType = MediaType.parse("text/plain");
+        RequestBody body = RequestBody.create(mediaType, "");
+        Request request = new Request.Builder()
+                .url("https://manual-api.lambdatest.com/app/data?type="+platform+"&level=user")
+                .method("GET",null)
+                .addHeader("Authorization", credential)
+                .build();
+
+
+        Response response = client.newCall(request).execute();
+        assert response.body() != null;
+        return response.body().string();
+    }
+
+    private List<String> getAppIdsFromJson(String jsonData) {
+        List<String> namesList = new ArrayList<String>();
+        try {
+            JSONParser parser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) parser.parse(jsonData);
+            JSONArray dataArray = (JSONArray) jsonObject.get("data");
+            for (Object data : dataArray) {
+                JSONObject dataObject = (JSONObject) data;
+                String name = (String) dataObject.get("name");
+                namesList.add(name);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return namesList;
+    }
+
 }
 
 
