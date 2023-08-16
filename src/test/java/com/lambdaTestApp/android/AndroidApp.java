@@ -35,8 +35,8 @@ public class AndroidApp {
         }else {
             System.out.println("App not present, uploading app...");
             uploadApp();
-            System.out.println("App uploading successful");
-            System.out.println("Waiting for tests to be initiated");
+            System.out.println("App upload successful");
+            System.out.println("Waiting for tests to be initiated. It will take approx. 1 min for app to be configured to run with network logs");
             Thread.sleep(60000);
             System.out.println("Starting the test execution...");
         }
