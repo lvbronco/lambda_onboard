@@ -55,7 +55,6 @@ public class Visual_Baseline {
         Thread.sleep(100);
         driver.get("https://lambdatest.github.io/sample-todo-app/");
 
-        //((JavascriptExecutor)driver).executeScript("smartui.takeScreenshot=sample-1");
 
         System.out.println("Checking Box");
         driver.findElement(By.name("li1")).click();
