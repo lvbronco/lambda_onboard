@@ -34,14 +34,12 @@ To run playwright Test - Parallel 3 Thread's
 
 ### Visual UI Tests with Selenium
 
-Navigate to https://beta-smartui.lambdatest.com/
+Navigate to https://smartui.lambdatest.com/projects
 
-1. Create a project with name - Demo  
-![image](https://user-images.githubusercontent.com/97744525/161967674-a0d6668c-9079-4f08-b06e-c9132ef1b801.png)
-2. Run command ```  mvn test -D suite=visual_baseline.xml  ``` 
-3. run command ```  mvn test -D suite=visualchangebuild.xml ```
+1. Run command ```   mvn test -D suite=visual_baseline.xml -Denv.project=<NAME_OF_THE_CUSTOMER> ``` 
+2. run command ```  mvn test -D suite=visualchangebuild.xml -Denv.project=<NAME_OF_THE_CUSTOMER> ```
 
-## Note- Above Step 1 & 2 in Visual UI test needs to be executed only onc's i.e to create the project and run the baseline.
-## In Demo's please don't change Baseline
+Runs will be reflected in the smartUI dashboard with the same project name as passed in maven commands((NAME_OF_THE_CUSTOMER) ) above 
+
 
 

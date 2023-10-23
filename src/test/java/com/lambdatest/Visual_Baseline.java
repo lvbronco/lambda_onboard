@@ -4,13 +4,16 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.beust.jcommander.Parameter;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 public class Visual_Baseline {
@@ -19,28 +22,24 @@ public class Visual_Baseline {
     private String Status = "failed";
 
     @BeforeMethod
-    public void setup(Method m, ITestContext ctx) throws MalformedURLException {
+    @Parameters("environment")
+    public void setup(Method m, ITestContext ctx, String environment) throws MalformedURLException {
         String username = System.getenv("LT_USERNAME") == null ? "Your LT Username" : System.getenv("LT_USERNAME");
         String authkey = System.getenv("LT_ACCESS_KEY") == null ? "Your LT AccessKey" : System.getenv("LT_ACCESS_KEY");
         ;
-        String hub = "@beta-smartui-hub.lambdatest.com/wd/hub";
+        String hub = "@hub.lambdatest.com/wd/hub";
 
         DesiredCapabilities caps = new DesiredCapabilities();
-        caps.setCapability("platform", "MacOS Catalina");
+        caps.setCapability("platform", "Windows 10");
         caps.setCapability("browserName", "Chrome");
         caps.setCapability("version", "latest");
         caps.setCapability("build", "TestNG With Java - Visual Build");
         caps.setCapability("name", m.getName() + this.getClass().getName());
         caps.setCapability("plugin", "git-testng");
-        caps.setCapability("performance",true);
         caps.setCapability("network", true);
-        caps.setCapability("console", true);
-        caps.setCapability("networkThrottling", "Regular 4G");
-        caps.setCapability("commandLog", true);
-        caps.setCapability("systemLog", true);
-        caps.setCapability("terminal", true);
         caps.setCapability("video", true);
-        caps.setCapability("smartUI.project", "Demo");
+        caps.setCapability("smartUI.project", environment);
+        caps.setCapability("smartUI.baseline", true);
 
 
         String[] Tags = new String[] { "Feature", "Tag", "Moderate" };
@@ -55,11 +54,12 @@ public class Visual_Baseline {
         System.out.println("Loading Url");
         Thread.sleep(100);
         driver.get("https://lambdatest.github.io/sample-todo-app/");
-        
-        driver.executeScript("smartui.takeScreenshot");
+
 
         System.out.println("Checking Box");
         driver.findElement(By.name("li1")).click();
+
+        ((JavascriptExecutor)driver).executeScript("smartui.takeScreenshot=sample-1");
 
         System.out.println("Checking Another Box");
         driver.findElement(By.name("li2")).click();
