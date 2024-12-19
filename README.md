@@ -5,6 +5,9 @@ To run single test (Web Browser Automation) use below command
 
 To run single test (Mobile Browser Automation) use below command
      mvn test -D suite=mobile.xml
+     
+To run accesiility test (Web Browser Automation) use below command
+     mvn test -D suite=accesibility.xml
 
 To run parallel test (Web Browser Automation) use below command
      mvn test -D suite=parallel.xml
@@ -40,6 +43,16 @@ Navigate to https://smartui.lambdatest.com/projects
 2. run command ```  mvn test -D suite=visualchangebuild.xml -Denv.project=<NAME_OF_THE_CUSTOMER> ```
 
 Runs will be reflected in the smartUI dashboard with the same project name as passed in maven commands((NAME_OF_THE_CUSTOMER) ) above 
+
+### Run test with Hyperexecute
+
+
+1. Run command ```   ./hyperexecute --config testng_hyperexecute_autosplit_sample.yaml --download-artifacts --force-clean-artifacts   ```
+```./hyperexecute --config hyperexecute.yaml --download-artifacts --force-clean-artifacts -v```
+
+Runs will be reflected in the Hyperexecute dashboard here https://hyperexecute.lambdatest.com/hyperexecute/jobs
+
+
 
 
 
