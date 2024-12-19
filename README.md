@@ -48,7 +48,6 @@ Runs will be reflected in the smartUI dashboard with the same project name as pa
 
 
 1. Run command ```   ./hyperexecute --config testng_hyperexecute_autosplit_sample.yaml --download-artifacts --force-clean-artifacts   ```
-```./hyperexecute --config hyperexecute.yaml --download-artifacts --force-clean-artifacts -v```
 
 Runs will be reflected in the Hyperexecute dashboard here https://hyperexecute.lambdatest.com/hyperexecute/jobs
 
