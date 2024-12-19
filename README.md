@@ -47,7 +47,8 @@ Runs will be reflected in the smartUI dashboard with the same project name as pa
 ### Run test with Hyperexecute
 
 
-1. Run command ```   ./hyperexecute --config testng_hyperexecute_autosplit_sample.yaml --download-artifacts --force-clean-artifacts --user <username> --key <accesskey>  ```
+1. Run function test ```   ./hyperexecute --config testng_hyperexecute_autosplit_sample.yaml --download-artifacts --force-clean-artifacts --user <username> --key <accesskey>  ```
+2. Run jmeter test ```   ./hyperexecute --config jmeter.yaml --download-artifacts --force-clean-artifacts --user <username> --key <accesskey>  ```
 
 Runs will be reflected in the Hyperexecute dashboard here https://hyperexecute.lambdatest.com/hyperexecute/jobs
 
