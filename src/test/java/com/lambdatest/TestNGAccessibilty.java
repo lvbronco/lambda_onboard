@@ -59,7 +59,7 @@ public class TestNGAccessibilty {
 
         driver.get("https://www.google.com");
 
-        driver.executeScript("smartui.takeScreenshot({'screenshotName':'home-page'})");
+        //driver.executeScript("smartui.takeScreenshot({'screenshotName':'home-page'})");
 
         Thread.sleep(2000);
 
