@@ -7,7 +7,7 @@ To run single test (Mobile Browser Automation) use below command
      mvn test -D suite=mobile.xml
      
 To run accesiility test (Web Browser Automation) use below command
-     mvn test -D suite=accesibility.xml
+     mvn test -D suite=accessibility.xml
 
 To run parallel test (Web Browser Automation) use below command
      mvn test -D suite=parallel.xml
