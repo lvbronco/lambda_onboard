@@ -80,6 +80,25 @@
 			<artifactId>json-simple</artifactId>
 			<version>1.1.1</version>
 		</dependency>
+		<!-- Allure Reporting Dependencies -->
+		<dependency>
+			<groupId>io.qameta.allure</groupId>
+			<artifactId>allure-testng</artifactId>
+			<version>2.24.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.qameta.allure</groupId>
+			<artifactId>allure-selenide</artifactId>
+			<version>2.24.0</version>
+		</dependency>
+		<!-- Private Maven Dependency - Commented out for local testing -->
+		<!--
+		<dependency>
+			<groupId>com.lambdatest.private</groupId>
+			<artifactId>lambdatest-utils</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		-->
 	</dependencies>
 
 </project>

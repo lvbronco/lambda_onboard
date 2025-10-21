@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite thread-count="5" name="Android 5 Emulators Parallel" parallel="tests">
+
+  <test name="Android Emulator 1 - Pixel 6">
+    <parameter name="version" value="12" />
+    <parameter name="platform" value="Android" />
+    <parameter name="device" value="Pixel 6" />
+    <parameter name="isRealMobile" value="false" />
+    <classes>
+      <class name="com.lambdaTestApp.android.AndroidApp" />
+    </classes>
+  </test>
+
+  <test name="Android Emulator 2 - Pixel 5">
+    <parameter name="version" value="11" />
+    <parameter name="platform" value="Android" />
+    <parameter name="device" value="Pixel 5" />
+    <parameter name="isRealMobile" value="false" />
+    <classes>
+      <class name="com.lambdaTestApp.android.AndroidApp" />
+    </classes>
+  </test>
+
+  <test name="Android Emulator 3 - Galaxy S21">
+    <parameter name="version" value="11" />
+    <parameter name="platform" value="Android" />
+    <parameter name="device" value="Galaxy S21" />
+    <parameter name="isRealMobile" value="false" />
+    <classes>
+      <class name="com.lambdaTestApp.android.AndroidApp" />
+    </classes>
+  </test>
+
+  <test name="Android Emulator 4 - Pixel 4">
+    <parameter name="version" value="10" />
+    <parameter name="platform" value="Android" />
+    <parameter name="device" value="Pixel 4" />
+    <parameter name="isRealMobile" value="false" />
+    <classes>
+      <class name="com.lambdaTestApp.android.AndroidApp" />
+    </classes>
+  </test>
+
+  <test name="Android Emulator 5 - Galaxy S20">
+    <parameter name="version" value="10" />
+    <parameter name="platform" value="Android" />
+    <parameter name="device" value="Galaxy S20" />
+    <parameter name="isRealMobile" value="false" />
+    <classes>
+      <class name="com.lambdaTestApp.android.AndroidApp" />
+    </classes>
+  </test>
+
+</suite>

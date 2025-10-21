@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite thread-count="5" name="Android 5 Devices Parallel" parallel="tests">
+
+  <test name="Android Device 1 - Galaxy S22">
+    <parameter name="version" value="12" />
+    <parameter name="platform" value="Android" />
+    <parameter name="device" value="Galaxy S22 5G" />
+    <classes>
+      <class name="com.lambdaTestApp.android.AndroidApp" />
+    </classes>
+  </test>
+
+  <test name="Android Device 2 - Pixel 6">
+    <parameter name="version" value="12" />
+    <parameter name="platform" value="Android" />
+    <parameter name="device" value="Pixel 6" />
+    <classes>
+      <class name="com.lambdaTestApp.android.AndroidApp" />
+    </classes>
+  </test>
+
+  <test name="Android Device 3 - OnePlus 9">
+    <parameter name="version" value="11" />
+    <parameter name="platform" value="Android" />
+    <parameter name="device" value="OnePlus 9" />
+    <classes>
+      <class name="com.lambdaTestApp.android.AndroidApp" />
+    </classes>
+  </test>
+
+  <test name="Android Device 4 - Galaxy Note 20">
+    <parameter name="version" value="11" />
+    <parameter name="platform" value="Android" />
+    <parameter name="device" value="Galaxy Note20 Ultra 5G" />
+    <classes>
+      <class name="com.lambdaTestApp.android.AndroidApp" />
+    </classes>
+  </test>
+
+  <test name="Android Device 5 - Xiaomi Mi 11">
+    <parameter name="version" value="11" />
+    <parameter name="platform" value="Android" />
+    <parameter name="device" value="Xiaomi Mi 11" />
+    <classes>
+      <class name="com.lambdaTestApp.android.AndroidApp" />
+    </classes>
+  </test>
+
+</suite>

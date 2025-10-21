@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite thread-count="3" name="XCUI Test Suite" parallel="tests">
+
+  <test name="XCUI Test 1 - iPhone 14">
+    <parameter name="version" value="16" />
+    <parameter name="platform" value="iOS" />
+    <parameter name="device" value="iPhone 14" />
+    <parameter name="testFramework" value="XCUITest" />
+    <classes>
+      <class name="com.lambdaTestApp.iOS.XCUITestApp" />
+    </classes>
+  </test>
+
+  <test name="XCUI Test 2 - iPhone 13">
+    <parameter name="version" value="15" />
+    <parameter name="platform" value="iOS" />
+    <parameter name="device" value="iPhone 13" />
+    <parameter name="testFramework" value="XCUITest" />
+    <classes>
+      <class name="com.lambdaTestApp.iOS.XCUITestApp" />
+    </classes>
+  </test>
+
+  <test name="XCUI Test 3 - iPhone 12">
+    <parameter name="version" value="14" />
+    <parameter name="platform" value="iOS" />
+    <parameter name="device" value="iPhone 12" />
+    <parameter name="testFramework" value="XCUITest" />
+    <classes>
+      <class name="com.lambdaTestApp.iOS.XCUITestApp" />
+    </classes>
+  </test>
+
+</suite>

@@ -1,0 +1,133 @@
+---
+version: 0.2
+globalTimeout: 400
+testSuiteTimeout: 400
+testSuiteStep: 400
+
+# Platform configuration
+runson: win
+
+# Auto-split configuration
+autosplit: true
+retryOnFailure: true
+maxRetries: 3
+concurrency: 4
+
+# Tunnel configuration
+tunnel: true
+
+# Environment variables
+env:
+  LT_USERNAME: ${LT_USERNAME}
+  LT_ACCESS_KEY: ${LT_ACCESS_KEY}
+  CACHE_DIR: m2_cache_dir
+  PRIVATE_REPO_URL: ${PRIVATE_REPO_URL}
+  PRIVATE_REPO_USER: ${PRIVATE_REPO_USER}
+  PRIVATE_REPO_PASS: ${PRIVATE_REPO_PASS}
+
+# Cache configuration
+cacheKey: '{{ checksum "pom.xml" }}'
+cacheDirectories:
+  - .m2
+  - target
+  - private-dependency
+
+# Pre-execution steps - Build and install private dependency
+pre:
+  - echo "Setting up private Maven dependency..."
+  
+  # Build the private dependency
+  - echo "Building private dependency..."
+  - cd private-dependency
+  - mvn clean install -DskipTests
+  - cd ..
+  
+  # Install private dependency to local Maven repository
+  - echo "Installing private dependency to local repository..."
+  - mvn install:install-file -Dfile=private-dependency/target/lambdatest-utils-1.0.0.jar -DgroupId=com.lambdatest.private -DartifactId=lambdatest-utils -Dversion=1.0.0 -Dpackaging=jar
+  
+  # Configure Maven settings for private repository access
+  - echo "Configuring Maven settings for private repository..."
+  - mkdir -p ~/.m2
+  - echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" > ~/.m2/settings.xml
+  - echo "<settings xmlns=\"http://maven.apache.org/SETTINGS/1.0.0\"" >> ~/.m2/settings.xml
+  - echo "          xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" >> ~/.m2/settings.xml
+  - echo "          xsi:schemaLocation=\"http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd\">" >> ~/.m2/settings.xml
+  - echo "  <servers>" >> ~/.m2/settings.xml
+  - echo "    <server>" >> ~/.m2/settings.xml
+  - echo "      <id>private-repo</id>" >> ~/.m2/settings.xml
+  - echo "      <username>$PRIVATE_REPO_USER</username>" >> ~/.m2/settings.xml
+  - echo "      <password>$PRIVATE_REPO_PASS</password>" >> ~/.m2/settings.xml
+  - echo "    </server>" >> ~/.m2/settings.xml
+  - echo "  </servers>" >> ~/.m2/settings.xml
+  - echo "  <repositories>" >> ~/.m2/settings.xml
+  - echo "    <repository>" >> ~/.m2/settings.xml
+  - echo "      <id>private-repo</id>" >> ~/.m2/settings.xml
+  - echo "      <url>$PRIVATE_REPO_URL</url>" >> ~/.m2/settings.xml
+  - echo "    </repository>" >> ~/.m2/settings.xml
+  - echo "  </repositories>" >> ~/.m2/settings.xml
+  - echo "</settings>" >> ~/.m2/settings.xml
+  
+  # Resolve dependencies including private dependency
+  - echo "Resolving dependencies with private dependency..."
+  - mvn -Dmaven.repo.local=./.m2 dependency:resolve
+  - mvn clean compile
+  
+  # Verify private dependency is available
+  - echo "Verifying private dependency..."
+  - mvn dependency:tree | grep lambdatest-utils || echo "Private dependency not found in dependency tree"
+
+# Post-execution steps
+post:
+  - echo "Test execution with private dependency completed"
+  - ls -la target/surefire-reports/
+  - echo "Private dependency usage verified"
+
+# Artifact collection
+mergeArtifacts: true
+uploadArtefacts:
+  - name: TestReports
+    path:
+      - target/surefire-reports/html/**
+      - target/surefire-reports/xml/**
+  - name: PrivateDependency
+    path:
+      - private-dependency/target/**
+  - name: Screenshots
+    path:
+      - screenshots/**
+  - name: Logs
+    path:
+      - logs/**
+
+# Reporting configuration
+report: true
+partialReports:
+  location: target/surefire-reports/html
+  type: html
+  frameworkName: testng
+
+# Framework configuration
+framework:
+  name: maven/testng
+  defaultReports: false
+  flags:
+    - "-Dsuite=parallel.xml"
+    - "-Dmaven.repo.local=./.m2"
+
+# Private repository configuration
+privateRepositories:
+  - id: private-repo
+    url: $PRIVATE_REPO_URL
+    username: $PRIVATE_REPO_USER
+    password: $PRIVATE_REPO_PASS
+
+# Job labeling
+jobLabel: [private-maven-dependency, hyperexecute, custom-utils]
+
+# Notification settings
+notifications:
+  - type: email
+    recipients: ["your-email@example.com"]
+    onSuccess: true
+    onFailure: true

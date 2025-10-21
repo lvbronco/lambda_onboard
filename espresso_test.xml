@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite thread-count="3" name="Espresso Test Suite" parallel="tests">
+
+  <test name="Espresso Test 1 - Pixel 6">
+    <parameter name="version" value="12" />
+    <parameter name="platform" value="Android" />
+    <parameter name="device" value="Pixel 6" />
+    <parameter name="testFramework" value="Espresso" />
+    <classes>
+      <class name="com.lambdaTestApp.android.EspressoTestApp" />
+    </classes>
+  </test>
+
+  <test name="Espresso Test 2 - Galaxy S22">
+    <parameter name="version" value="12" />
+    <parameter name="platform" value="Android" />
+    <parameter name="device" value="Galaxy S22 5G" />
+    <parameter name="testFramework" value="Espresso" />
+    <classes>
+      <class name="com.lambdaTestApp.android.EspressoTestApp" />
+    </classes>
+  </test>
+
+  <test name="Espresso Test 3 - OnePlus 9">
+    <parameter name="version" value="11" />
+    <parameter name="platform" value="Android" />
+    <parameter name="device" value="OnePlus 9" />
+    <parameter name="testFramework" value="Espresso" />
+    <classes>
+      <class name="com.lambdaTestApp.android.EspressoTestApp" />
+    </classes>
+  </test>
+
+</suite>

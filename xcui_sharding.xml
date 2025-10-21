@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite thread-count="5" name="XCUI Test with Sharding" parallel="tests">
+
+  <test name="XCUI Shard 1">
+    <parameter name="version" value="16" />
+    <parameter name="platform" value="iOS" />
+    <parameter name="device" value="iPhone 14" />
+    <parameter name="testFramework" value="XCUITest" />
+    <parameter name="shardIndex" value="0" />
+    <parameter name="totalShards" value="5" />
+    <classes>
+      <class name="com.lambdaTestApp.iOS.XCUITestSharding" />
+    </classes>
+  </test>
+
+  <test name="XCUI Shard 2">
+    <parameter name="version" value="15" />
+    <parameter name="platform" value="iOS" />
+    <parameter name="device" value="iPhone 13" />
+    <parameter name="testFramework" value="XCUITest" />
+    <parameter name="shardIndex" value="1" />
+    <parameter name="totalShards" value="5" />
+    <classes>
+      <class name="com.lambdaTestApp.iOS.XCUITestSharding" />
+    </classes>
+  </test>
+
+  <test name="XCUI Shard 3">
+    <parameter name="version" value="14" />
+    <parameter name="platform" value="iOS" />
+    <parameter name="device" value="iPhone 12" />
+    <parameter name="testFramework" value="XCUITest" />
+    <parameter name="shardIndex" value="2" />
+    <parameter name="totalShards" value="5" />
+    <classes>
+      <class name="com.lambdaTestApp.iOS.XCUITestSharding" />
+    </classes>
+  </test>
+
+  <test name="XCUI Shard 4">
+    <parameter name="version" value="14" />
+    <parameter name="platform" value="iOS" />
+    <parameter name="device" value="iPhone 11" />
+    <parameter name="testFramework" value="XCUITest" />
+    <parameter name="shardIndex" value="3" />
+    <parameter name="totalShards" value="5" />
+    <classes>
+      <class name="com.lambdaTestApp.iOS.XCUITestSharding" />
+    </classes>
+  </test>
+
+  <test name="XCUI Shard 5">
+    <parameter name="version" value="15" />
+    <parameter name="platform" value="iOS" />
+    <parameter name="device" value="iPhone SE (3rd generation)" />
+    <parameter name="testFramework" value="XCUITest" />
+    <parameter name="shardIndex" value="4" />
+    <parameter name="totalShards" value="5" />
+    <classes>
+      <class name="com.lambdaTestApp.iOS.XCUITestSharding" />
+    </classes>
+  </test>
+
+</suite>

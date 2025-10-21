@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite thread-count="5" name="Espresso Sharding with JUnit Report" parallel="tests">
+
+  <test name="Espresso Shard 1">
+    <parameter name="version" value="12" />
+    <parameter name="platform" value="Android" />
+    <parameter name="device" value="Pixel 6" />
+    <parameter name="testFramework" value="Espresso" />
+    <parameter name="shardIndex" value="0" />
+    <parameter name="totalShards" value="5" />
+    <parameter name="junitReport" value="true" />
+    <classes>
+      <class name="com.lambdaTestApp.android.EspressoShardingTest" />
+    </classes>
+  </test>
+
+  <test name="Espresso Shard 2">
+    <parameter name="version" value="12" />
+    <parameter name="platform" value="Android" />
+    <parameter name="device" value="Galaxy S22 5G" />
+    <parameter name="testFramework" value="Espresso" />
+    <parameter name="shardIndex" value="1" />
+    <parameter name="totalShards" value="5" />
+    <parameter name="junitReport" value="true" />
+    <classes>
+      <class name="com.lambdaTestApp.android.EspressoShardingTest" />
+    </classes>
+  </test>
+
+  <test name="Espresso Shard 3">
+    <parameter name="version" value="11" />
+    <parameter name="platform" value="Android" />
+    <parameter name="device" value="OnePlus 9" />
+    <parameter name="testFramework" value="Espresso" />
+    <parameter name="shardIndex" value="2" />
+    <parameter name="totalShards" value="5" />
+    <parameter name="junitReport" value="true" />
+    <classes>
+      <class name="com.lambdaTestApp.android.EspressoShardingTest" />
+    </classes>
+  </test>
+
+  <test name="Espresso Shard 4">
+    <parameter name="version" value="11" />
+    <parameter name="platform" value="Android" />
+    <parameter name="device" value="Galaxy Note20 Ultra 5G" />
+    <parameter name="testFramework" value="Espresso" />
+    <parameter name="shardIndex" value="3" />
+    <parameter name="totalShards" value="5" />
+    <parameter name="junitReport" value="true" />
+    <classes>
+      <class name="com.lambdaTestApp.android.EspressoShardingTest" />
+    </classes>
+  </test>
+
+  <test name="Espresso Shard 5">
+    <parameter name="version" value="11" />
+    <parameter name="platform" value="Android" />
+    <parameter name="device" value="Xiaomi Mi 11" />
+    <parameter name="testFramework" value="Espresso" />
+    <parameter name="shardIndex" value="4" />
+    <parameter name="totalShards" value="5" />
+    <parameter name="junitReport" value="true" />
+    <classes>
+      <class name="com.lambdaTestApp.android.EspressoShardingTest" />
+    </classes>
+  </test>
+
+</suite>

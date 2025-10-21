@@ -1,0 +1,99 @@
+---
+version: 0.2
+globalTimeout: 400
+testSuiteTimeout: 400
+testSuiteStep: 400
+
+# Platform configuration
+runson: win
+
+# Auto-split configuration for parallel execution
+autosplit: true
+retryOnFailure: true
+maxRetries: 3
+concurrency: 4
+
+# Tunnel configuration
+tunnel: true
+
+# Environment variables
+env:
+  LT_USERNAME: ${LT_USERNAME}
+  LT_ACCESS_KEY: ${LT_ACCESS_KEY}
+  CACHE_DIR: m2_cache_dir
+  TEST_ENV: cucumber-hyperexecute
+
+# Cache configuration
+cacheKey: '{{ checksum "cucumber-tests/pom.xml" }}'
+cacheDirectories:
+  - .m2
+  - target
+
+# Pre-execution steps
+pre:
+  - echo "Setting up Cucumber test environment..."
+  - cd cucumber-tests
+  - mvn -Dmaven.repo.local=./.m2 dependency:resolve
+  - mvn clean compile
+  - echo "Test discovery: Finding Cucumber feature files..."
+  - find src/test/resources/features -name "*.feature" -type f
+  - echo "Test discovery: Found feature files"
+
+# Post-execution steps
+post:
+  - echo "Cucumber test execution completed"
+  - ls -la target/cucumber-reports/
+  - echo "Generating Allure reports..."
+  - mvn allure:report
+
+# Artifact collection
+mergeArtifacts: true
+uploadArtefacts:
+  - name: CucumberReports
+    path:
+      - cucumber-tests/target/cucumber-reports/**
+  - name: AllureReports
+    path:
+      - cucumber-tests/target/allure-results/**
+  - name: Screenshots
+    path:
+      - cucumber-tests/screenshots/**
+  - name: Logs
+    path:
+      - cucumber-tests/logs/**
+
+# Reporting configuration
+report: true
+partialReports:
+  location: cucumber-tests/target/cucumber-reports
+  type: html
+  frameworkName: cucumber
+
+# Framework configuration for Cucumber
+framework:
+  name: maven/testng
+  defaultReports: false
+  flags:
+    - "-Dsuite=testng.xml"
+    - "-Dmaven.repo.local=./.m2"
+    - "-Dcucumber.options=--tags @smoke"
+
+# Test discovery configuration
+testDiscovery:
+  enabled: true
+  patterns:
+    - "**/*.feature"
+    - "**/src/test/resources/features/**/*.feature"
+  excludePatterns:
+    - "**/target/**"
+    - "**/node_modules/**"
+
+# Job labeling
+jobLabel: [cucumber-testng, hyperexecute, bdd-testing]
+
+# Notification settings
+notifications:
+  - type: email
+    recipients: ["your-email@example.com"]
+    onSuccess: true
+    onFailure: true

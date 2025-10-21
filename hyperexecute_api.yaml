@@ -1,0 +1,95 @@
+---
+version: 0.2
+globalTimeout: 300
+testSuiteTimeout: 300
+testSuiteStep: 300
+
+# Platform configuration for API testing
+runson: win
+
+# Auto-split configuration
+autosplit: true
+retryOnFailure: true
+maxRetries: 3
+concurrency: 6
+
+# Tunnel configuration (not needed for API tests but kept for consistency)
+tunnel: false
+
+# Environment variables
+env:
+  LT_USERNAME: ${LT_USERNAME}
+  LT_ACCESS_KEY: ${LT_ACCESS_KEY}
+  CACHE_DIR: m2_cache_dir
+  API_BASE_URL: ${API_BASE_URL:-https://jsonplaceholder.typicode.com}
+  TEST_ENV: api-hyperexecute
+
+# Cache configuration
+cacheKey: '{{ checksum "api-tests/pom.xml" }}'
+cacheDirectories:
+  - .m2
+  - target
+
+# Pre-execution steps
+pre:
+  - echo "Setting up API test environment..."
+  - echo "API Base URL: $API_BASE_URL"
+  - cd api-tests
+  - mvn -Dmaven.repo.local=./.m2 dependency:resolve
+  - mvn clean compile
+  - echo "API test environment setup completed"
+
+# Post-execution steps
+post:
+  - echo "API test execution completed"
+  - ls -la target/surefire-reports/
+  - echo "Generating Allure reports for API tests..."
+  - mvn allure:report
+
+# Artifact collection
+mergeArtifacts: true
+uploadArtefacts:
+  - name: APITestReports
+    path:
+      - api-tests/target/surefire-reports/html/**
+      - api-tests/target/surefire-reports/xml/**
+  - name: AllureReports
+    path:
+      - api-tests/target/allure-results/**
+  - name: APILogs
+    path:
+      - api-tests/logs/**
+
+# Reporting configuration
+report: true
+partialReports:
+  location: api-tests/target/surefire-reports/html
+  type: html
+  frameworkName: testng
+
+# Framework configuration for API tests
+framework:
+  name: maven/testng
+  defaultReports: false
+  flags:
+    - "-Dsuite=testng.xml"
+    - "-Dmaven.repo.local=./.m2"
+    - "-Dapi.base.url=$API_BASE_URL"
+
+# API testing specific configuration
+apiTesting:
+  enabled: true
+  baseUrl: $API_BASE_URL
+  timeout: 30000
+  retryCount: 3
+  parallelExecution: true
+
+# Job labeling
+jobLabel: [api-testing, hyperexecute, rest-assured]
+
+# Notification settings
+notifications:
+  - type: email
+    recipients: ["your-email@example.com"]
+    onSuccess: true
+    onFailure: true

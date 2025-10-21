@@ -1,0 +1,126 @@
+---
+version: 0.2
+globalTimeout: 300
+testSuiteTimeout: 300
+testSuiteStep: 300
+
+# Platform configuration
+runson: win
+
+# Auto-split configuration
+autosplit: true
+retryOnFailure: true
+maxRetries: 3
+concurrency: 4
+
+# Tunnel configuration
+tunnel: true
+
+# Environment variables
+env:
+  LT_USERNAME: ${LT_USERNAME}
+  LT_ACCESS_KEY: ${LT_ACCESS_KEY}
+  CACHE_DIR: m2_cache_dir
+  GITHUB_TOKEN: ${GITHUB_TOKEN}
+  GITHUB_REPO: ${GITHUB_REPO}
+  GITHUB_BRANCH: ${GITHUB_BRANCH:-main}
+
+# Cache configuration
+cacheKey: '{{ checksum "pom.xml" }}'
+cacheDirectories:
+  - .m2
+  - target
+
+# Pre-execution steps - GitHub repository access
+pre:
+  - echo "Setting up GitHub repository access..."
+  - echo "Repository: $GITHUB_REPO"
+  - echo "Branch: $GITHUB_BRANCH"
+  
+  # Clone or update repository
+  - if [ ! -d "github-repo" ]; then
+      echo "Cloning repository from GitHub...";
+      git clone https://$GITHUB_TOKEN@github.com/$GITHUB_REPO.git github-repo;
+    else
+      echo "Updating existing repository...";
+      cd github-repo;
+      git pull origin $GITHUB_BRANCH;
+      cd ..;
+    fi
+  
+  # Navigate to repository directory
+  - cd github-repo
+  
+  # Install dependencies
+  - echo "Installing Maven dependencies..."
+  - mvn -Dmaven.repo.local=./.m2 dependency:resolve
+  - mvn clean compile
+  
+  # List available test files
+  - echo "Available test files:"
+  - find . -name "*.java" -path "*/test/*" | head -10
+  - find . -name "*.xml" -path "*/test/*" | head -10
+
+# Post-execution steps
+post:
+  - echo "GitHub repository test execution completed"
+  - ls -la target/surefire-reports/
+  - echo "Publishing results back to GitHub..."
+  
+  # Optional: Push results back to repository
+  - git config --global user.email "test@lambdatest.com"
+  - git config --global user.name "LambdaTest Hyperexecute"
+  - git add target/surefire-reports/
+  - git commit -m "Test execution results from Hyperexecute" || echo "No changes to commit"
+  - git push origin $GITHUB_BRANCH || echo "Failed to push results"
+
+# Artifact collection
+mergeArtifacts: true
+uploadArtefacts:
+  - name: TestReports
+    path:
+      - github-repo/target/surefire-reports/html/**
+      - github-repo/target/surefire-reports/xml/**
+  - name: Screenshots
+    path:
+      - github-repo/screenshots/**
+  - name: Logs
+    path:
+      - github-repo/logs/**
+
+# Reporting configuration
+report: true
+partialReports:
+  location: github-repo/target/surefire-reports/html
+  type: html
+  frameworkName: testng
+
+# Framework configuration
+framework:
+  name: maven/testng
+  defaultReports: false
+  flags:
+    - "-Dsuite=parallel.xml"
+    - "-Dmaven.repo.local=./.m2"
+
+# GitHub integration settings
+github:
+  repository: $GITHUB_REPO
+  branch: $GITHUB_BRANCH
+  token: $GITHUB_TOKEN
+  commitResults: true
+  createPR: false
+
+# Job labeling
+jobLabel: [github-integration, hyperexecute, repository-tests]
+
+# Notification settings
+notifications:
+  - type: email
+    recipients: ["your-email@example.com"]
+    onSuccess: true
+    onFailure: true
+  - type: github
+    repository: $GITHUB_REPO
+    onSuccess: true
+    onFailure: true

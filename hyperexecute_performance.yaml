@@ -1,0 +1,136 @@
+---
+version: 0.2
+globalTimeout: 600
+testSuiteTimeout: 600
+testSuiteStep: 600
+
+# Platform configuration for performance testing
+runson: win
+
+# Auto-split configuration for performance tests
+autosplit: true
+retryOnFailure: true
+maxRetries: 2
+concurrency: 2
+
+# Tunnel configuration (not needed for performance tests)
+tunnel: false
+
+# Environment variables
+env:
+  LT_USERNAME: ${LT_USERNAME}
+  LT_ACCESS_KEY: ${LT_ACCESS_KEY}
+  CACHE_DIR: m2_cache_dir
+  API_BASE_URL: ${API_BASE_URL:-https://jsonplaceholder.typicode.com}
+  PERFORMANCE_TEST_ENV: hyperexecute
+  JMETER_HOME: /opt/jmeter
+  GATLING_HOME: /opt/gatling
+
+# Cache configuration
+cacheKey: '{{ checksum "performance-tests/pom.xml" }}'
+cacheDirectories:
+  - .m2
+  - target
+  - performance-tests/target
+
+# Pre-execution steps
+pre:
+  - echo "Setting up performance test environment..."
+  - echo "API Base URL: $API_BASE_URL"
+  
+  # Install JMeter
+  - echo "Installing Apache JMeter..."
+  - curl -L -o apache-jmeter-5.5.zip "https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.5.zip"
+  - unzip -q apache-jmeter-5.5.zip
+  - export JMETER_HOME=$(pwd)/apache-jmeter-5.5
+  - export PATH=$PATH:$JMETER_HOME/bin
+  
+  # Install Gatling
+  - echo "Installing Gatling..."
+  - curl -L -o gatling-3.9.5.zip "https://repo1.maven.org/maven2/io/gatling/highcharts/gatling-charts-highcharts-bundle/3.9.5/gatling-charts-highcharts-bundle-3.9.5-bundle.zip"
+  - unzip -q gatling-3.9.5.zip
+  - export GATLING_HOME=$(pwd)/gatling-charts-highcharts-bundle-3.9.5
+  - export PATH=$PATH:$GATLING_HOME/bin
+  
+  # Setup performance test project
+  - cd performance-tests
+  - mvn -Dmaven.repo.local=./.m2 dependency:resolve
+  - mvn clean compile
+  
+  # Run JMeter tests
+  - echo "Running JMeter performance tests..."
+  - jmeter -n -t src/test/resources/jmeter/performance-test.jmx -l target/jmeter-results.jtl -e -o target/jmeter-report
+  
+  - echo "Performance test environment setup completed"
+
+# Post-execution steps
+post:
+  - echo "Performance test execution completed"
+  - ls -la target/
+  - echo "Performance test results:"
+  - ls -la target/jmeter-report/
+  - echo "Generating performance reports..."
+  - mvn allure:report
+
+# Artifact collection
+mergeArtifacts: true
+uploadArtefacts:
+  - name: PerformanceTestReports
+    path:
+      - performance-tests/target/surefire-reports/html/**
+      - performance-tests/target/surefire-reports/xml/**
+  - name: JMeterReports
+    path:
+      - performance-tests/target/jmeter-report/**
+      - performance-tests/target/jmeter-results.jtl
+  - name: AllureReports
+    path:
+      - performance-tests/target/allure-results/**
+  - name: PerformanceLogs
+    path:
+      - performance-tests/logs/**
+
+# Reporting configuration
+report: true
+partialReports:
+  location: performance-tests/target/surefire-reports/html
+  type: html
+  frameworkName: testng
+
+# Framework configuration for performance tests
+framework:
+  name: maven/testng
+  defaultReports: false
+  flags:
+    - "-Dsuite=testng.xml"
+    - "-Dmaven.repo.local=./.m2"
+    - "-Dapi.base.url=$API_BASE_URL"
+
+# Performance testing specific configuration
+performanceTesting:
+  enabled: true
+  loadTest:
+    enabled: true
+    concurrentUsers: 100
+    duration: 300
+  stressTest:
+    enabled: true
+    maxUsers: 500
+    rampUpTime: 60
+  enduranceTest:
+    enabled: true
+    duration: 1800
+    users: 50
+  memoryTest:
+    enabled: true
+    maxMemoryUsage: 512MB
+
+# Job labeling
+jobLabel: [performance-testing, hyperexecute, load-testing, jmeter]
+
+# Notification settings
+notifications:
+  - type: email
+    recipients: ["your-email@example.com"]
+    onSuccess: true
+    onFailure: true

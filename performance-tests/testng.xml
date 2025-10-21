@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Performance Test Suite" parallel="methods" thread-count="5">
+    <test name="API Performance Tests">
+        <classes>
+            <class name="com.lambdatest.performance.tests.APIPerformanceTest"/>
+        </classes>
+    </test>
+</suite>

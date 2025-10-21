@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite thread-count="5" name="iOS 5 Devices Parallel" parallel="tests">
+
+  <test name="iOS Device 1 - iPhone 14">
+    <parameter name="version" value="16" />
+    <parameter name="platform" value="iOS" />
+    <parameter name="device" value="iPhone 14" />
+    <classes>
+      <class name="com.lambdaTestApp.iOS.IOSApp" />
+    </classes>
+  </test>
+
+  <test name="iOS Device 2 - iPhone 13">
+    <parameter name="version" value="15" />
+    <parameter name="platform" value="iOS" />
+    <parameter name="device" value="iPhone 13" />
+    <classes>
+      <class name="com.lambdaTestApp.iOS.IOSApp" />
+    </classes>
+  </test>
+
+  <test name="iOS Device 3 - iPhone 12">
+    <parameter name="version" value="14" />
+    <parameter name="platform" value="iOS" />
+    <parameter name="device" value="iPhone 12" />
+    <classes>
+      <class name="com.lambdaTestApp.iOS.IOSApp" />
+    </classes>
+  </test>
+
+  <test name="iOS Device 4 - iPhone 11">
+    <parameter name="version" value="14" />
+    <parameter name="platform" value="iOS" />
+    <parameter name="device" value="iPhone 11" />
+    <classes>
+      <class name="com.lambdaTestApp.iOS.IOSApp" />
+    </classes>
+  </test>
+
+  <test name="iOS Device 5 - iPhone SE">
+    <parameter name="version" value="15" />
+    <parameter name="platform" value="iOS" />
+    <parameter name="device" value="iPhone SE (3rd generation)" />
+    <classes>
+      <class name="com.lambdaTestApp.iOS.IOSApp" />
+    </classes>
+  </test>
+
+</suite>

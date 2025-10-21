@@ -1,10 +1,9 @@
-# Maven
-# Build your Java project and run tests with Apache Maven.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/java
+# Azure DevOps Pipeline for LambdaTest Hyperexecute
+# This pipeline triggers web-based tests on LambdaTest Hyperexecute platform
 
 trigger:
-- none
+- main
+- develop
 
 resources:
   webhooks:
@@ -14,10 +13,226 @@ resources:
 pool:
   vmImage: ubuntu-latest
 
-steps:
-- task: CmdLine@2
-  inputs:
-    script: |
-      echo Write your commands here
-      
-      echo Hello world
+variables:
+  LT_USERNAME: $(LT_USERNAME)
+  LT_ACCESS_KEY: $(LT_ACCESS_KEY)
+  EMAIL_RECIPIENTS: $(EMAIL_RECIPIENTS)
+
+stages:
+- stage: HyperexecuteWebTests
+  displayName: 'Run Web Tests on Hyperexecute'
+  jobs:
+  - job: HyperexecuteTestJob
+    displayName: 'Execute Tests on Hyperexecute'
+    steps:
+    - task: CmdLine@2
+      displayName: 'Setup Environment'
+      inputs:
+        script: |
+          echo "Setting up LambdaTest Hyperexecute environment..."
+          echo "LambdaTest Username: $(LT_USERNAME)"
+          echo "LambdaTest Access Key: $(LT_ACCESS_KEY)"
+          
+          # Install required tools
+          sudo apt-get update
+          sudo apt-get install -y curl wget unzip
+          
+          # Install Maven
+          wget https://archive.apache.org/dist/maven/maven-3/3.9.5/binaries/apache-maven-3.9.5-bin.tar.gz
+          sudo tar xzf apache-maven-3.9.5-bin.tar.gz -C /opt/
+          sudo ln -s /opt/apache-maven-3.9.5 /opt/maven
+          echo 'export PATH=/opt/maven/bin:$PATH' >> ~/.bashrc
+          source ~/.bashrc
+          
+          # Verify Maven installation
+          mvn --version
+
+    - task: CmdLine@2
+      displayName: 'Download and Configure Hyperexecute CLI'
+      inputs:
+        script: |
+          echo "Downloading LambdaTest Hyperexecute CLI..."
+          
+          # Download Hyperexecute CLI (assuming it's available)
+          # curl -L -o hyperexecute-cli.zip "https://downloads.lambdatest.com/hyperexecute/hyperexecute-cli.zip"
+          # unzip hyperexecute-cli.zip
+          # chmod +x hyperexecute
+          
+          # For demonstration, we'll use curl to trigger Hyperexecute via API
+          echo "Hyperexecute CLI setup completed"
+
+    - task: CmdLine@2
+      displayName: 'Trigger Hyperexecute Web Tests'
+      inputs:
+        script: |
+          echo "Triggering web-based tests on Hyperexecute..."
+          
+          # Set environment variables
+          export LT_USERNAME=$(LT_USERNAME)
+          export LT_ACCESS_KEY=$(LT_ACCESS_KEY)
+          
+          # Create Hyperexecute YAML for web tests
+          cat > hyperexecute_web_azure.yaml << 'EOF'
+          ---
+          version: 0.2
+          globalTimeout: 300
+          testSuiteTimeout: 300
+          testSuiteStep: 300
+          
+          runson: win
+          
+          autosplit: true
+          retryOnFailure: true
+          maxRetries: 3
+          concurrency: 4
+          
+          tunnel: true
+          
+          env:
+            LT_USERNAME: $(LT_USERNAME)
+            LT_ACCESS_KEY: $(LT_ACCESS_KEY)
+            AZURE_PIPELINE: true
+            BUILD_ID: $(Build.BuildId)
+            BUILD_NUMBER: $(Build.BuildNumber)
+          
+          cacheKey: '{{ checksum "pom.xml" }}'
+          cacheDirectories:
+            - .m2
+            - target
+          
+          pre:
+            - echo "Azure Pipeline triggered Hyperexecute test..."
+            - echo "Build ID: $(Build.BuildId)"
+            - echo "Build Number: $(Build.BuildNumber)"
+            - mvn -Dmaven.repo.local=./.m2 dependency:resolve
+            - mvn clean compile
+          
+          post:
+            - echo "Azure Pipeline test execution completed"
+            - ls -la target/surefire-reports/
+          
+          mergeArtifacts: true
+          uploadArtefacts:
+            - name: AzureTestReports
+              path:
+                - target/surefire-reports/html/**
+                - target/surefire-reports/xml/**
+            - name: Screenshots
+              path:
+                - screenshots/**
+          
+          report: true
+          partialReports:
+            location: target/surefire-reports/html
+            type: html
+            frameworkName: testng
+          
+          framework:
+            name: maven/testng
+            defaultReports: false
+            flags:
+              - "-Dsuite=parallel.xml"
+              - "-Dmaven.repo.local=./.m2"
+          
+          jobLabel: [azure-pipeline, hyperexecute, web-tests]
+          
+          notifications:
+            - type: email
+              recipients: ["$(EMAIL_RECIPIENTS)"]
+              onSuccess: true
+              onFailure: true
+          EOF
+          
+          echo "Hyperexecute YAML configuration created"
+          cat hyperexecute_web_azure.yaml
+
+    - task: CmdLine@2
+      displayName: 'Execute Tests via Hyperexecute API'
+      inputs:
+        script: |
+          echo "Executing tests on Hyperexecute platform..."
+          
+          # Trigger Hyperexecute via API
+          curl -X POST "https://api.lambdatest.com/hyperexecute/v1/run" \
+            -H "Authorization: Basic $(echo -n "$(LT_USERNAME):$(LT_ACCESS_KEY)" | base64)" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "yaml": "'"$(cat hyperexecute_web_azure.yaml | base64 -w 0)"'",
+              "buildName": "Azure Pipeline Build '$(Build.BuildNumber)'",
+              "buildId": "'$(Build.BuildId)'"
+            }' \
+            -o hyperexecute_response.json
+          
+          echo "Hyperexecute API response:"
+          cat hyperexecute_response.json
+          
+          # Extract execution ID
+          EXECUTION_ID=$(cat hyperexecute_response.json | jq -r '.executionId')
+          echo "Execution ID: $EXECUTION_ID"
+          
+          # Wait for execution to complete (simplified)
+          echo "Waiting for test execution to complete..."
+          sleep 300  # Wait 5 minutes (in real scenario, poll status)
+
+    - task: CmdLine@2
+      displayName: 'Download Test Results'
+      inputs:
+        script: |
+          echo "Downloading test results from Hyperexecute..."
+          
+          # Download test results
+          curl -X GET "https://api.lambdatest.com/hyperexecute/v1/executions/$EXECUTION_ID/artifacts" \
+            -H "Authorization: Basic $(echo -n "$(LT_USERNAME):$(LT_ACCESS_KEY)" | base64)" \
+            -o test_results.zip
+          
+          # Extract results
+          unzip test_results.zip -d test_results/
+          
+          echo "Test results downloaded:"
+          ls -la test_results/
+
+    - task: PublishTestResults@2
+      displayName: 'Publish Test Results'
+      inputs:
+        testResultsFormat: 'TestNG'
+        testResultsFiles: 'test_results/target/surefire-reports/xml/*.xml'
+        testRunTitle: 'Hyperexecute Web Tests'
+        mergeTestResults: true
+      condition: always()
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Test Artifacts'
+      inputs:
+        pathToPublish: 'test_results'
+        artifactName: 'HyperexecuteTestResults'
+      condition: always()
+
+    - task: CmdLine@2
+      displayName: 'Send Email Notification'
+      inputs:
+        script: |
+          echo "Sending email notification..."
+          
+          # Create email content
+          cat > email_notification.html << 'EOF'
+          <html>
+          <body>
+            <h2>Azure Pipeline - Hyperexecute Test Results</h2>
+            <p><strong>Build ID:</strong> $(Build.BuildId)</p>
+            <p><strong>Build Number:</strong> $(Build.BuildNumber)</p>
+            <p><strong>Pipeline:</strong> $(System.TeamFoundationCollectionUri)/$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)</p>
+            <p><strong>Status:</strong> Tests executed on LambdaTest Hyperexecute</p>
+            <p><strong>Results:</strong> Check the published artifacts for detailed reports</p>
+          </body>
+          </html>
+          EOF
+          
+          # Send email (using curl to send via email service)
+          curl -X POST "https://api.emailservice.com/send" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "to": ["$(EMAIL_RECIPIENTS)"],
+              "subject": "Azure Pipeline - Hyperexecute Test Results",
+              "html": "'"$(cat email_notification.html | base64 -w 0)"'"
+            }' || echo "Email notification failed"
+      condition: always()

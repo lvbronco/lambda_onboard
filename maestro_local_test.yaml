@@ -1,0 +1,28 @@
+# Maestro Local Test Configuration
+# This file defines Maestro tests for local device/emulator testing
+
+appId: proverbial-android
+testTimeout: 30000
+clearState: true
+---
+# Basic App Flow Test
+- launchApp
+- tapOn: "Color"
+- assertVisible: "Color"
+- tapOn: "Text"
+- assertVisible: "Text"
+- tapOn: "Toast"
+- assertVisible: "Toast"
+- tapOn: "Notification"
+- assertVisible: "Notification"
+- tapOn: "GeoLocation"
+- assertVisible: "GeoLocation"
+- back
+- tapOn: "Speed Test"
+- assertVisible: "Speed Test"
+- back
+- tapOn: "Browser"
+- assertVisible: "Browser"
+- inputText: "https://www.lambdatest.com"
+- tapOn: "Find"
+- assertVisible: "Find"

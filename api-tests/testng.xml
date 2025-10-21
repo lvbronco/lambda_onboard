@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="API Test Suite" parallel="methods" thread-count="3">
+    <test name="User API Tests">
+        <classes>
+            <class name="com.lambdatest.api.tests.UserAPITest"/>
+        </classes>
+    </test>
+    <test name="Post API Tests">
+        <classes>
+            <class name="com.lambdatest.api.tests.PostAPITest"/>
+        </classes>
+    </test>
+</suite>

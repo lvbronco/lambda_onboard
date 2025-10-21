@@ -1,0 +1,80 @@
+---
+version: 0.2
+globalTimeout: 400
+testSuiteTimeout: 400
+testSuiteStep: 400
+
+# Platform configuration for mobile testing
+runson: win
+
+# Auto-split configuration
+autosplit: true
+retryOnFailure: true
+maxRetries: 3
+concurrency: 3
+
+# Tunnel configuration
+tunnel: true
+
+# Environment variables
+env:
+  LT_USERNAME: ${LT_USERNAME}
+  LT_ACCESS_KEY: ${LT_ACCESS_KEY}
+  CACHE_DIR: m2_cache_dir
+  PLATFORM: mobile
+
+# Cache configuration
+cacheKey: '{{ checksum "pom.xml" }}'
+cacheDirectories:
+  - .m2
+  - target
+
+# Pre-execution steps
+pre:
+  - echo "Setting up mobile test environment..."
+  - mvn -Dmaven.repo.local=./.m2 dependency:resolve
+  - mvn clean compile
+
+# Post-execution steps
+post:
+  - echo "Mobile test execution completed"
+  - ls -la target/surefire-reports/
+
+# Artifact collection
+mergeArtifacts: true
+uploadArtefacts:
+  - name: MobileTestReports
+    path:
+      - target/surefire-reports/html/**
+      - target/surefire-reports/xml/**
+  - name: MobileScreenshots
+    path:
+      - screenshots/**
+  - name: AppLogs
+    path:
+      - logs/**
+
+# Reporting configuration
+report: true
+partialReports:
+  location: target/surefire-reports/html
+  type: html
+  frameworkName: testng
+
+# Framework configuration for mobile tests
+framework:
+  name: maven/testng
+  defaultReports: false
+  flags:
+    - "-Dsuite=mobile.xml"
+    - "-Dmaven.repo.local=./.m2"
+
+# Job labeling
+jobLabel: [mobile-testng, hyperexecute, appium]
+
+# Notification settings
+notifications:
+  - type: email
+    recipients: ["your-email@example.com"]
+    onSuccess: true
+    onFailure: true
